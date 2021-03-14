@@ -1,0 +1,26 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+    message_consumer:
+        class: App\Service\Queue\MessageConsumer
+    App\Service\Queue\MessageProducer: '@old_sound_rabbit_mq.messaging_producer'
+    App\Service\Result\ResultProviderHelper:
+        arguments:
+            $resultProviderUrl: '%env(RESULT_PROVIDER_URL)%'
+    App\ApplicationExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

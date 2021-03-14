@@ -1,0 +1,20 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+            read_write_timeout: 4
+            heartbeat: 2
+    producers:
+        messaging:
+            class: App\Service\Queue\MessageProducer
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_QUEUE_EXCHANGE_NAME)%', type: direct }
+            auto_setup_fabric: false
+    consumers:
+        messaging:
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_QUEUE_EXCHANGE_NAME)%', type: direct }
+            queue_options:    { name: '%env(RABBITMQ_QUEUE_NAME)%'}
+            callback:         message_consumer
+            enable_logger:    true
+            auto_setup_fabric: false
